@@ -183,8 +183,8 @@ class PioneerImageCompressed(PioneerImage):
         super().__init__(file, offset, size)
 
     def write(self, file: BinaryIO, size_hint: int | None = None) -> int:
-        with tempfile.TemporaryFile(dir='.') as file_img:
-            with tempfile.TemporaryFile(dir='.') as file_simg:
+        with tempfile.TemporaryFile() as file_img:
+            with tempfile.TemporaryFile() as file_simg:
                 super().write(file_simg)
                 assert simg_to_img(file_simg.fileno(), file_img.fileno())
             return file_to_file(file_img, file)
@@ -414,7 +414,7 @@ class FileSystem(SourceImage):
     def write(self, file: BinaryIO, size_hint: int | None = None) -> int:
         assert size_hint is not None
 
-        with tempfile.TemporaryFile(dir='.') as file_fs:
+        with tempfile.TemporaryFile() as file_fs:
             zero_to_file(file_fs, size_hint)
             assert file_fs.seek(0, os.SEEK_SET) == 0
             assert mke2fs(
