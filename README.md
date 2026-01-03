@@ -126,10 +126,8 @@ Use your utility of choice (`dd`, balenaEtcher, ...) to flash the firmware
 image to an **8GB** SD card.
 
 Bigger SD cards (at least up to 32GB) generally also work, but firmware
-updates seem to get stuck when the installed SD card is more than 8GB big,
-and one will only be able to recover to this by replacing the SD card with
-a newly flashed 8GB one (if you are lucky) or reprogramming the internal NOR
-flash, which requires special tooling.
+updates seem to get stuck when the installed SD card is more than 8GB big.
+See below for notes on recovering from this situation.
 
 Finally, install the new SD card into the internal SD card slot of the head
 unit, and enjoy the (hopefully) restored head unit.
@@ -176,6 +174,20 @@ Pioneer uses the following passwords:
 
 - 2018 and earlier models: `LKPFeD4BcVzESR2Y`
 - 2019 and possibly later models: `gJ6NK7hSQWKs5Age`
+
+### Stuck Firmware Updates
+
+When the SD card is bigger than 8GB or broken/corrupted in some way already,
+initiating a firmware update can cause the head unit to get stuck in a loop
+of (unsuccessfully) attempting to perform the firmware update.
+
+From experience, it is usually possible to recover from this situation by
+replacing the SD card with an intact, high-quality **8GB** one that ideally
+has been freshly flashed.
+
+As a last resort, it is also possible to clear the firmware update flag in the
+BSP on the internal NOR flash. This is the definitive way of getting the head
+unit unstuck, but this requires special tooling and advanced soldering skills.
 
 ### Debug Menu
 
