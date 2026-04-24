@@ -123,7 +123,7 @@ image will be available as `AVH18.img` or `AVH19.img` in the `data/` folder.
 ### Final Steps
 
 Use your utility of choice (`dd`, balenaEtcher, ...) to flash the firmware
-image to an **8GB** SD card.
+image to a high-quality **8GB** SD card.
 
 Bigger SD cards (at least up to 32GB) generally also work, but firmware
 updates seem to get stuck when the installed SD card is more than 8GB big.
@@ -137,6 +137,83 @@ to the SD card via `CMD42`, if it is not already protected. This means that it
 cannot easily be used again using a standard operating system, so make sure
 the new SD card is correctly flashed with the correct image before attempting
 to boot the head unit.
+
+## Common Problems
+
+This section lists some problems that one can run into with Pioneer head units
+and gives probable solutions.
+
+### Bootlooping / "Software Error"
+
+If the head unit fails to boot properly and instead is caught in a bootloop or
+shows a "software error" screen, the internal firmware SD card has likely gone
+bad. Follow the instructions in the "Usage" section to flash a new SD card as
+a replacement.
+
+### Frequent Crashes / Hang-Ups / Lock-Ups
+
+If the head unit's software is becoming less stable, the internal firmware SD
+card is likely in the process of failing. Follow the instructions in the
+"Usage" section to flash a new SD card as a replacement.
+
+### Settings Not Saving
+
+If settings or paired devices are lost after a restart of the head unit, the
+internal firmware SD card is likely in the process of failing. Follow the
+instructions in the "Usage" section to flash a new SD card as a replacement.
+
+Doing a factory reset may be worth a try, but if the SD card has already been
+in use for some time, it is unlikely that this will be a long-term fix.
+
+### Slow Boot Process
+
+If the head unit is suddenly taking longer to boot, the internal firmware SD
+card is likely in the process of failing. Follow the instructions in the
+"Usage" section to flash a new SD card as a replacement.
+
+If the SD card has just been replaced, and the boot process now takes longer
+than expected, make sure a high-quality SD card from a reputable vendor was
+used. It does not need to be particularly fancy, just make sure it has decent
+read performance.
+
+If a firmware update of the head unit was recently attempted, and it may not
+have been 100% successful, or someone played around with its debug menus,
+"Warp!!" boot may be disabled. To confirm it is indeed set to the slow
+"NORMAL" instead of the "WARP_BOOT" mode, check the "Set Boot SubMode" menu
+of the first debug menu (see "Debug Menu" section below). If "NORMAL" mode
+is in fact the current mode (see bottom right corner), select the "WARP_BOOT"
+option instead, exit the menu and restart the device. Make sure to **never**
+select "CATCH_SNAPSHOT", as it will brick the head unit in a way that it is
+hard to recover from.
+
+In case a glitched firmware update caused "Warp!!" boot to be disabled, which
+can be the result of attempting to perform a firmware update with an internal
+SD card bigger than 8GB, it is probably desirable to replace the SD card with
+a freshly flashed one, as the system may be in a weird overall state.
+
+For more details on "Warp!!" boot, check the "General Architecture" section.
+
+### Graphical Glitches During Boot
+
+Same as for the "Slow Boot Process" problem above.
+
+Brief graphical glitches between the initial "Pioneer" screen (without
+"Loading ..." on it) and the "Loading ..." screen in conjunction with longer
+boot times are a strong indicator that "Warp!!" boot is disabled!
+
+### Stuck Firmware Updates
+
+When the SD card is bigger than 8GB or broken/corrupted in some way already,
+initiating a firmware update can cause the head unit to get stuck in a loop
+of (unsuccessfully) attempting to perform the firmware update.
+
+From experience, it is usually possible to recover from this situation by
+replacing the SD card with an intact, high-quality **8GB** one that ideally
+has been freshly flashed.
+
+As a last resort, it is also possible to clear the firmware update flag in the
+BSP on the internal NOR flash. This is the definitive way of getting the head
+unit unstuck, but this requires special tooling and advanced soldering skills.
 
 ## Miscellaneous
 
@@ -152,7 +229,19 @@ into RAM, so that the system does not need to boot "from scratch".
 
 A modified U-Boot build, installed on the internal NOR flash, is used as the
 bootloader. It reads some settings from a configuration area ("BSP") in the
-flash, which can partially be modified via the debug menu.
+flash, which can partially be modified via the debug menu. This, for example,
+includes the boot mode (like booting the head unit's normal firmware vs.
+booting the firmware updater) and the boot submode.
+
+The boot submode dictates whether "Warp!!" boot is used for the firmware.
+Its current status can be checked and modified in the "Sub Boot SubMode" menu
+of the first debug menu, as described in the "Debug Menu" section below. If
+"WARP_BOOT" is selected, "Warp!!" boot is active, as it should be for normal
+usage, and if "NORMAL" is selected, "Warp!!" boot is inactive, so the head unit
+always boots from scratch, which results in longer boot times, but is needed
+when making modifications to the software. Note that "CATCH_SNAPSHOT" must
+**never** be selected, as it will brick the head unit in a way that it is hard
+to recover from.
 
 Since Pioneer relies on open source software, where licenses usually require
 source code to be made available, buyers can request source code for parts
@@ -175,20 +264,6 @@ Pioneer uses the following passwords:
 - 2018 and earlier models: `LKPFeD4BcVzESR2Y`
 - 2019 and possibly later models: `gJ6NK7hSQWKs5Age`
 
-### Stuck Firmware Updates
-
-When the SD card is bigger than 8GB or broken/corrupted in some way already,
-initiating a firmware update can cause the head unit to get stuck in a loop
-of (unsuccessfully) attempting to perform the firmware update.
-
-From experience, it is usually possible to recover from this situation by
-replacing the SD card with an intact, high-quality **8GB** one that ideally
-has been freshly flashed.
-
-As a last resort, it is also possible to clear the firmware update flag in the
-BSP on the internal NOR flash. This is the definitive way of getting the head
-unit unstuck, but this requires special tooling and advanced soldering skills.
-
 ### Debug Menu
 
 **Warning:** Before enabling the debug menu, beware that some options in there
@@ -208,7 +283,8 @@ in the "Set Boot SubMode" menu.
 
 5. Touch and hold the middle of the screen again until the debug menu opens.
 
-The same procedure can be used to deactivate the debug menu again.
+The same procedure can be used to deactivate the debug menu again, so that
+critical settings cannot be changed by accident.
 
 There is also a second (less interesting) debug menu, which can be activated
 using the same procedure but with a file named
